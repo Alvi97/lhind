@@ -1,35 +1,32 @@
 {
-  "name": "lhind",
-  "$schema": "node_modules/nx/schemas/project-schema.json",
-  "includedScripts": [],
+  "name": "dashboard",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
   "projectType": "application",
-  "prefix": "app",
-  "sourceRoot": "./src",
+  "prefix": "lhind",
+  "sourceRoot": "apps/dashboard/src",
   "tags": [],
   "targets": {
     "build": {
-      "executor": "@angular-devkit/build-angular:application",
+      "executor": "@nx/angular:webpack-browser",
       "outputs": ["{options.outputPath}"],
       "options": {
-        "outputPath": "dist/lhind",
-        "index": "./src/index.html",
-        "browser": "./src/main.ts",
+        "outputPath": "dist/apps/dashboard",
+        "index": "apps/dashboard/src/index.html",
+        "main": "apps/dashboard/src/main.ts",
         "polyfills": ["zone.js"],
-        "tsConfig": "tsconfig.app.json",
+        "tsConfig": "apps/dashboard/tsconfig.app.json",
         "inlineStyleLanguage": "scss",
         "assets": [
           {
             "glob": "**/*",
-            "input": "public"
+            "input": "apps/dashboard/public"
           }
         ],
-        "styles": ["./src/styles.scss"],
+        "styles": ["apps/dashboard/src/styles.scss"],
         "scripts": [],
-        "server": "src/main.server.ts",
-        "ssr": {
-          "entry": "src/server.ts"
-        },
-        "outputMode": "server"
+        "customWebpackConfig": {
+          "path": "apps/dashboard/webpack.config.ts"
+        }
       },
       "configurations": {
         "production": {
@@ -48,21 +45,28 @@
           "outputHashing": "all"
         },
         "development": {
+          "buildOptimizer": false,
           "optimization": false,
+          "vendorChunk": true,
           "extractLicenses": false,
-          "sourceMap": true
+          "sourceMap": true,
+          "namedChunks": true
         }
       },
       "defaultConfiguration": "production"
     },
     "serve": {
-      "executor": "@angular-devkit/build-angular:dev-server",
+      "executor": "@nx/angular:module-federation-dev-server",
+      "options": {
+        "port": 4200,
+        "publicHost": "http://localhost:4200"
+      },
       "configurations": {
         "production": {
-          "buildTarget": "lhind:build:production"
+          "buildTarget": "dashboard:build:production"
         },
         "development": {
-          "buildTarget": "lhind:build:development"
+          "buildTarget": "dashboard:build:development"
         }
       },
       "defaultConfiguration": "development"
@@ -70,27 +74,17 @@
     "extract-i18n": {
       "executor": "@angular-devkit/build-angular:extract-i18n",
       "options": {
-        "buildTarget": "lhind:build"
+        "buildTarget": "dashboard:build"
       }
     },
     "lint": {
-      "executor": "@nx/eslint:lint",
-      "options": {
-        "lintFilePatterns": ["./src"]
-      }
-    },
-    "test": {
-      "executor": "@nx/jest:jest",
-      "outputs": ["{workspaceRoot}/coverage/{projectName}"],
-      "options": {
-        "jestConfig": "jest.config.ts"
-      }
+      "executor": "@nx/eslint:lint"
     },
     "serve-static": {
       "executor": "@nx/web:file-server",
       "options": {
-        "buildTarget": "lhind:build",
-        "staticFilePath": "dist/lhind/browser",
+        "buildTarget": "dashboard:build",
+        "port": 4200,
         "spa": true
       }
     }
