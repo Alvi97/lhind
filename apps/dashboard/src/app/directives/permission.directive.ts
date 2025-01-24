@@ -21,16 +21,14 @@ export class PermissionDirective {
   }
 
   private updateView(): void {
-    if (this.userService.currentUser && this.hasAllPermissions(this.requiredPermissions)) {
-      // If the user has all required permissions, display the element
+    if (this.userService.currentUser && this.hasAnyPermission(this.requiredPermissions)) {
       this.viewContainer.createEmbeddedView(this.templateRef);
     } else {
-      // Otherwise, clear the view
       this.viewContainer.clear();
     }
   }
 
-  private hasAllPermissions(permissions: Permission[]): boolean {
-    return permissions.every((perm) => this.userService.currentUser?.permissions.includes(perm));
+  private hasAnyPermission(permissions: Permission[]): boolean {
+    return permissions.some((perm) => this.userService.currentUser?.permissions.includes(perm));
   }
 }

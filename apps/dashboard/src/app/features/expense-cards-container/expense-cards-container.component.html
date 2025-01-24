@@ -8,10 +8,12 @@
 >
   <mat-card
     class="card"
+    (click)="selectType(item)"
     *ngFor="let item of cards"
     style="cursor:pointer;flex: 50%; align-items: center; justify-content: center;border-radius:0px;border:1px solid #004f4f"
   >
     <mat-card-content
+      [ngStyle]="selectedItem === item.ident ? { color: 'red' } : { color: '#ffb787' }"
       style="
         display: flex;
         flex-direction: column;
@@ -21,7 +23,7 @@
         color:#ffb787
       "
     >
-      <mat-icon class="card-icon" style="font-size: 30px;height:30px;width:40px">{{ item.icon }}</mat-icon>
+      <mat-icon  class="card-icon" style="font-size: 30px;height:30px;width:40px">{{ item.icon }}</mat-icon>
       <h3 class="card-title">{{ item.name }}</h3>
     </mat-card-content>
   </mat-card>

@@ -9,6 +9,7 @@ import { OnDemandCacheService } from '../../services/on-demand-cache.service';
 import { DynamicAccordionDisplayComponent } from './dynamic-accordion-display/dynamic-accordion-display.component';
 import { TripData } from '../../models/trip.model';
 import { deepEqual } from '../../utils/deepCompare';
+import { CarRentalData } from '../../models/car-rental.model';
 
 @Component({
   selector: 'lhind-dynamic-list-container',
@@ -37,13 +38,18 @@ export class DynamicListContainerComponent<T> {
 
   public addElement(){
     const type = this.OnDemandCacheService.selectedonDemandType;
-    console.log(type , "1231313");
     switch (type){
 
       case 'Trips':
         const newTrip = new TripData();
         newTrip.id= this.OnDemandCacheService.currentTrips.length + 1;
         this.OnDemandCacheService.currentOnDemandElementSubject.next(newTrip);
+        break;
+      case 'Car Rentals':
+        const newCarRental = new CarRentalData();
+        newCarRental.id= this.OnDemandCacheService.carRentals.length + 1;
+        this.OnDemandCacheService.currentOnDemandElementSubject.next(newCarRental);
+        break;
     }
   }
 

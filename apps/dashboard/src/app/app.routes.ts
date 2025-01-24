@@ -3,6 +3,7 @@ import { loadRemote } from '@module-federation/enhanced/runtime';
 import { AppComponent } from './app.component';
 import { authGuard } from './guards/auth.guard';
 import { loggedInGuardGuard } from './guards/logged-in-guard.guard';
+import { DeclarativeComponent } from './features/declarative/declarative.component';
 
 export const appRoutes: Route[] = [
   {
@@ -16,7 +17,7 @@ export const appRoutes: Route[] = [
   },
   {
     path: '',
-    component: AppComponent,
+    component: DeclarativeComponent,
     canActivate: [authGuard],
   },
 ];

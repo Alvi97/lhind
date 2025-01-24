@@ -11,11 +11,11 @@
   </div>
 </ng-template>
 
-<mat-accordion sty>
-  <ng-container *ngFor="let sectionElement of (OnDemandCacheService.currentOnDemandDataSubject$ | async) as onDemandData">
+<mat-accordion >
+  <ng-container *ngFor="let sectionElement of (OnDemandCacheService.currentOnDemandDataSubject$ | async) as onDemandData;index as i">
   <mat-expansion-panel hideToggle style="margin:0;border-radius:0px" (click)="selectElement(sectionElement)">
     <mat-expansion-panel-header>
-      <mat-panel-title> {{sectionElement.name}} </mat-panel-title>
+      <mat-panel-title> {{sectionElement.name ? sectionElement.name : sectionElement.from + ' - ' + sectionElement.to }} </mat-panel-title>
     </mat-expansion-panel-header>
 <!--    <lhind-dynamic-accordion-display-->
 <!--      [object]="section"-->

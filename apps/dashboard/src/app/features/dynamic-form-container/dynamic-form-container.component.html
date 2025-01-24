@@ -9,9 +9,11 @@
         </mat-error>
       </mat-form-field>
     </div>
-    <button mat-raised-button color="primary" type="submit" [disabled]="formGroup.invalid">
-      Submit
-    </button>
   </form>
 
+  @if(formGroup.valid){
+  <ng-template [lhindPermission]="'SendForApproval'">
+    <button mat-raised-button (click)="sendForApproval()">Send For Approval </button>
+  </ng-template>
+  }
 }

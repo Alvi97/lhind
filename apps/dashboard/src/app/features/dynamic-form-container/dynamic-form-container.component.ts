@@ -6,6 +6,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { debounceTime, distinctUntilChanged, filter } from 'rxjs';
+import { PermissionDirective } from '../../directives/permission.directive';
 
 @Component({
   selector: 'lhind-dynamic-form-container',
@@ -16,6 +17,7 @@ import { debounceTime, distinctUntilChanged, filter } from 'rxjs';
     MatInputModule,
     MatFormFieldModule,
     MatButtonModule,
+    PermissionDirective
   ],
   templateUrl: './dynamic-form-container.component.html',
   styleUrls: ['./dynamic-form-container.component.css'],
@@ -44,14 +46,14 @@ export class DynamicFormContainerComponent<T extends { id: number } & Record<str
   buildForm(): void {
     if (!this.selectedObject) {
       console.error('No object provided for dynamic form!');
-      this.formGroup = this.fb.group({}); // Fallback to an empty FormGroup
+      this.formGroup = this.fb.group({});
       return;
     }
 
     const group: { [key: string]: any } = {};
 
     Object.keys(this.selectedObject)
-      .filter((key) => key !== 'id') // Exclude 'id'
+      .filter((key) => key !== 'id' && key !== 'userId'  && key !== 'setForApproval' )
       .forEach((key) => {
         group[key] = this.fb.control(this.selectedObject[key] || '', Validators.required);
       });
@@ -94,12 +96,10 @@ export class DynamicFormContainerComponent<T extends { id: number } & Record<str
     if(!this.formGroup.valid) return;
     const currentData = this.onDemandCacheService.currentOnDemandDataSubject.getValue();
 
-    // Find the index of the element to update
     const index = currentData.findIndex((element) => element.id === updatedElement.id);
 
     if (index !== -1) {
-      // Replace the old element with the updated one
-      currentData[index] = { ...currentData[index], ...updatedElement };
+     currentData[index] = { ...currentData[index], ...updatedElement };
 
       // Push the updated array back to the BehaviorSubject
       this.onDemandCacheService.currentOnDemandDataSubject.next([...currentData]);
@@ -107,5 +107,9 @@ export class DynamicFormContainerComponent<T extends { id: number } & Record<str
       this.onDemandCacheService.currentOnDemandDataSubject.next([...currentData,updatedElement]);
       console.error('Element not found in currentOnDemandDataSubject');
     }
+  }
+
+  sendForApproval(){
+    this.formGroup.controls['setForApproval'].setValue(true);
   }
 }
