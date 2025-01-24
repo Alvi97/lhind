@@ -13,6 +13,10 @@ export class UserService {
 
   private router = inject(Router);
 
+  public get currentUser():User | null{
+    return this.currentUserSubject.value;
+  }
+
   login(credentials: UserLogin): boolean {
     console.log('login' , credentials);
     const user = USERS.find(
@@ -32,13 +36,14 @@ export class UserService {
   }
 
 
-  logout(): void {
+  public logout(): void {
+    debugger
     this.currentUserSubject.next(null);
     localStorage.removeItem('currentUser');
     this.router.navigate(['login']);
   }
 
-  getCurrentUser(): User | null {
+  public getCurrentUser(): User | null {
     const storedUser = localStorage.getItem('currentUser');
     if (!this.currentUserSubject.value && storedUser) {
       this.currentUserSubject.next(JSON.parse(storedUser));
