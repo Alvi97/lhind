@@ -1,0 +1,17 @@
+@if(!!(onDemandCacheService.currentOnDemandDataSubject$ | async) && selectedObject){
+  <form *ngIf="formGroup" [formGroup]="formGroup" (ngSubmit)="onSubmit()" style="padding:10px">
+    <div *ngFor="let key of getKeys()">
+      <mat-form-field appearance="fill" class="form-field" style="width: 100%">
+        <mat-label>{{ key }}</mat-label>
+        <input matInput [formControlName]="key" [type]="getFieldType(formGroup.get(key)?.value)" />
+        <mat-error *ngIf="formGroup.get(key)?.hasError('required')">
+          {{ key }} is required
+        </mat-error>
+      </mat-form-field>
+    </div>
+    <button mat-raised-button color="primary" type="submit" [disabled]="formGroup.invalid">
+      Submit
+    </button>
+  </form>
+
+}

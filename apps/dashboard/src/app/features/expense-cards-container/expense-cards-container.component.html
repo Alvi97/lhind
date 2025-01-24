@@ -1,0 +1,28 @@
+<div
+  class="main-container"
+  fxLayout="row"
+  fxLayoutWrap
+  fxLayoutAlign="center center"
+  fxLayoutGap="20px"
+  style="display: flex; flex-direction: row; flex-wrap: wrap; height: 100%;padding:5px"
+>
+  <mat-card
+    class="card"
+    *ngFor="let item of cards"
+    style="cursor:pointer;flex: 50%; align-items: center; justify-content: center;border-radius:0px;border:1px solid #004f4f"
+  >
+    <mat-card-content
+      style="
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        font-size: 30px;
+        color:#ffb787
+      "
+    >
+      <mat-icon class="card-icon" style="font-size: 30px;height:30px;width:40px">{{ item.icon }}</mat-icon>
+      <h3 class="card-title">{{ item.name }}</h3>
+    </mat-card-content>
+  </mat-card>
+</div>

@@ -1,0 +1,24 @@
+<div class="dashboard" style="height: 100%;">
+  <mat-sidenav-container style="height: 100%">
+
+
+    <mat-sidenav opened mode="side" position="start" [disableClose]="true" (opened)="true" style="background: #004f4f;border-radius: 0px;    max-width: 300px;
+    width: 300px;">
+
+      <lhind-dynamic-list-container />
+
+    </mat-sidenav>
+
+    <mat-sidenav  mode="side" position="end" [disableClose]="true" [opened]="!!(onDemandCacheService.currentOnDemandElementSubject$ | async)" style="background: #004f4f;border-radius: 0px;    max-width: 300px;
+    width: 300px;">
+
+      <lhind-dynamic-form-container />
+
+    </mat-sidenav>
+
+
+    <mat-sidenav-content>
+    <lhind-expense-cards-container />
+    </mat-sidenav-content>
+  </mat-sidenav-container>
+</div>

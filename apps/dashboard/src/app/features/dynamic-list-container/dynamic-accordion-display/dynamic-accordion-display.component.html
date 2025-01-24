@@ -1,0 +1,5 @@
+<div *ngIf="object">
+  <div *ngFor="let key of getKeys()">
+    {{ key }}: {{ object[key] }}
+  </div>
+</div>

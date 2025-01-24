@@ -1,0 +1,30 @@
+<ng-template [lhindPermission]="'CanCreateTrip'">
+  <div style="margin-bottom: 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;">
+    <button mat-stroked-button (click)="addElement()">
+      <mat-icon aria-hidden="false" aria-label="Example home icon" fontIcon="add"></mat-icon>
+      Add <span [textContent]="OnDemandCacheService.selectedOnDemandTypeSubject$ | async"></span>
+
+    </button>
+  </div>
+</ng-template>
+
+<mat-accordion sty>
+  <ng-container *ngFor="let sectionElement of (OnDemandCacheService.currentOnDemandDataSubject$ | async) as onDemandData">
+  <mat-expansion-panel hideToggle style="margin:0;border-radius:0px" (click)="selectElement(sectionElement)">
+    <mat-expansion-panel-header>
+      <mat-panel-title> {{sectionElement.name}} </mat-panel-title>
+    </mat-expansion-panel-header>
+<!--    <lhind-dynamic-accordion-display-->
+<!--      [object]="section"-->
+<!--      [excludeKeys]="['id', 'name']"-->
+<!--    >-->
+<!--    </lhind-dynamic-accordion-display>-->
+<!--    <span *ngFor="let key of getKeys(section)">-->
+<!--    {{ key }}: {{ section[key] }}-->
+<!--  </span>-->
+  </mat-expansion-panel>
+  </ng-container>
+</mat-accordion>
