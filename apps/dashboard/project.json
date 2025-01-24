@@ -22,7 +22,8 @@
             "input": "apps/dashboard/public"
           }
         ],
-        "styles": ["apps/dashboard/src/styles.scss"],
+        "styles": ["apps/dashboard/src/styles.scss"
+        ],
         "scripts": [],
         "customWebpackConfig": {
           "path": "apps/dashboard/webpack.config.ts"

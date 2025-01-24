@@ -1,14 +1,16 @@
-import { Injectable } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
+import { Router } from '@angular/router';
 
 @Injectable({ providedIn: 'root' })
 export class UserService {
   private isUserLoggedIn = new BehaviorSubject(false);
   isUserLoggedIn$ = this.isUserLoggedIn.asObservable();
-
-  checkCredentials(username: string, password: string) {
-    if (username === 'demo' && password === 'demo') {
+  private router = inject(Router);
+  checkCredentials(credentials: any) {
+    if (credentials.username === 'demo' && credentials.password === 'demo') {
       this.isUserLoggedIn.next(true);
+      this.router.navigate(['']);
     }
   }
 

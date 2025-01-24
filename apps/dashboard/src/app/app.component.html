@@ -1,5 +1,31 @@
-<ul class="remote-menu" >
-  <li><a routerLink="/">Home</a></li>
-  <li><a routerLink="login">Login</a></li>
-</ul>
-<router-outlet></router-outlet>
+<!--<div class="dashboard" style="height: 100%;">-->
+<!--  <mat-sidenav-container style="height: 100%">-->
+<!--    <mat-sidenav mode="side">Sidenav content</mat-sidenav>-->
+<!--    <mat-sidenav-content><router-outlet></router-outlet></mat-sidenav-content>-->
+<!--  </mat-sidenav-container>-->
+<!--  &lt;!&ndash;<ul class="remote-menu" style="">&ndash;&gt;-->
+<!--&lt;!&ndash;  <li><a routerLink="/">Home</a></li>&ndash;&gt;-->
+<!--&lt;!&ndash;  <li><a routerLink="login">Login</a></li>&ndash;&gt;-->
+<!--&lt;!&ndash;</ul>&ndash;&gt;-->
+<!--</div>-->
+
+
+<div style="height: 100%; display: flex; flex-direction: column; justify-content: space-between;background-color: var(--mat-sidenav-content-background-color, var(--mat-sys-background));">
+
+  <div class="toolbar" style="background-color: var(--primary);height: 60px;display:flex;">
+    <lhind-toolbar />
+  </div>
+
+  <div style="flex: 1 1 auto; overflow: hidden;">
+    <router-outlet></router-outlet>
+  </div>
+  <span></span>
+
+  <div class="footer" style="background-color: var(--primary);height: 60px;display:flex;justify-content: center;
+    text-align: center;
+    align-items: center;" >
+      <span style="cursor: pointer; color: white">
+        Alvi Lika
+      </span>
+  </div>
+</div>
