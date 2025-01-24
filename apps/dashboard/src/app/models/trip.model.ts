@@ -1,5 +1,6 @@
 export interface Trip{
-  id?: number;
+  id: number;
+  userId:number;
   name: string;
   duration: number;
   setForApproval:false;
@@ -9,6 +10,7 @@ export interface Trip{
 
 export class TripData {
   public id:number;
+  public userId:number;
   public name: string;
   public duration: string;
   public setForApproval:boolean;

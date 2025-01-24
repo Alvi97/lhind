@@ -1,6 +1,7 @@
 export interface Flight{
   id:number;
   userId:1;
+  tripId:number;
   name: string;
   from: string;
   to:string;
@@ -13,6 +14,7 @@ export interface Flight{
 
 export class FlightData {
   public id: number;
+  public tripId:number
   public userId: number;
   public name: string;
   public from: string;
@@ -26,6 +28,7 @@ export class FlightData {
   public constructor() {
     this.id = 0;
     this.userId = 1;
+    this.tripId = 2;
     this.name = '';
     this.from = '';
     this.to = '';

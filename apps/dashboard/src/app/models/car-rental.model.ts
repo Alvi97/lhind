@@ -1,6 +1,7 @@
 export interface CarRental{
   id:number;
   userId:1;
+  tripId:number
   name: string;
   pickUpDateTime: Date;
   dropOffDateTime: Date;
@@ -12,6 +13,7 @@ export interface CarRental{
 export class CarRentalData {
   public id:number;
   public userId:number;
+  public tripId:number;
   public name: string;
   public pickUpDateTime: Date;
   public dropOffDateTime: Date;
@@ -22,6 +24,7 @@ export class CarRentalData {
   public constructor() {
     this.id = 0;
     this.userId = 1;
+    this.tripId =1;
     this.name = '';
     this.pickUpDateTime = new Date();
     this.dropOffDateTime = new Date();

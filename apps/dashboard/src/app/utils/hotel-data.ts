@@ -1,9 +1,10 @@
-import { HotelData } from '../models/hotel.model';
+import { Hotel } from '../models/hotel.model';
 
-export const hotels: HotelData[] = [
+export const hotels: Hotel[] = [
   {
     id: 1,
     userId: 1,
+    tripId:1,
     name: 'Grand Hotel',
     location: 'Paris',
     checkIn: new Date('2025-03-01'),
@@ -13,6 +14,7 @@ export const hotels: HotelData[] = [
   {
     id: 2,
     userId: 1,
+    tripId:2,
     name: 'Beach Resort',
     location: 'Maldives',
     checkIn: new Date('2025-03-10'),
@@ -22,6 +24,7 @@ export const hotels: HotelData[] = [
   {
     id: 3,
     userId: 1,
+    tripId:3,
     name: 'Mountain Inn',
     location: 'Switzerland',
     checkIn: new Date('2025-03-20'),

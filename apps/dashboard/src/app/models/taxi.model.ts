@@ -1,6 +1,7 @@
 export interface Taxi{
   id:number;
   userId:1;
+  tripId:number;
   from: string;
   to:string;
   time:string;
@@ -11,6 +12,7 @@ export interface Taxi{
 export class TaxiData {
   public id: number;
   public userId: number;
+  public tripId:number
   public from: string;
   public to: string;
   public time: string;
@@ -20,6 +22,7 @@ export class TaxiData {
   public constructor() {
     this.id = 0;
     this.userId = 1;
+    this.tripId =1;
     this.from = '';
     this.to = '';
     this.time = '';

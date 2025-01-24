@@ -1,10 +1,10 @@
-import { CarRental } from '../models/car-rental.model';
 import { Flight, FlightData } from '../models/flight.model';
 
-export const flights: FlightData[] = [
+export const flights: Flight[] = [
   {
     id: 1,
     userId: 1,
+    tripId:1,
     name: 'Flight to New York',
     from: 'London',
     to: 'New York',
@@ -17,6 +17,7 @@ export const flights: FlightData[] = [
   {
     id: 2,
     userId: 1,
+    tripId:2,
     name: 'Flight to Paris',
     from: 'Berlin',
     to: 'Paris',
@@ -29,6 +30,7 @@ export const flights: FlightData[] = [
   {
     id: 3,
     userId: 1,
+    tripId:3,
     name: 'Flight to Tokyo',
     from: 'San Francisco',
     to: 'Tokyo',

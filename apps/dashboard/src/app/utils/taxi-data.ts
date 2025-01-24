@@ -1,9 +1,10 @@
-import { TaxiData } from '../models/taxi.model';
+import { Taxi } from '../models/taxi.model';
 
-export const taxiData: TaxiData[] = [
+export const taxiData: Taxi[] = [
   {
     id: 1,
     userId: 1,
+    tripId:1  ,
     from: 'Airport',
     to: 'Hotel',
     time: '10:00 AM',
@@ -13,6 +14,7 @@ export const taxiData: TaxiData[] = [
   {
     id: 2,
     userId: 1,
+    tripId:1,
     from: 'Hotel',
     to: 'Beach',
     time: '03:00 PM',
@@ -22,6 +24,7 @@ export const taxiData: TaxiData[] = [
   {
     id: 3,
     userId: 1,
+    tripId:2,
     from: 'City Center',
     to: 'Train Station',
     time: '08:00 PM',

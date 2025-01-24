@@ -1,6 +1,7 @@
 export interface Hotel{
   id:number;
   userId:1;
+  tripId:number;
   name: string;
   location: string;
   checkIn: Date;
@@ -11,6 +12,7 @@ export interface Hotel{
 export class HotelData {
   public id: number;
   public userId: number;
+  tripId:number;
   public name: string;
   public location: string;
   public checkIn: Date;
@@ -20,6 +22,7 @@ export class HotelData {
   public constructor() {
     this.id = 0;
     this.userId = 1;
+    this.tripId = 2;
     this.name = '';
     this.location = '';
     this.checkIn = new Date();
