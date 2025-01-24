@@ -1,5 +1,5 @@
 @if(!!(onDemandCacheService.currentOnDemandDataSubject$ | async) && selectedObject){
-  <form *ngIf="formGroup" [formGroup]="formGroup" (ngSubmit)="onSubmit()" style="padding:10px">
+  <form *ngIf="formGroup" [formGroup]="formGroup" style="padding:10px">
     <div *ngFor="let key of getKeys()">
       <mat-form-field appearance="fill" class="form-field" style="width: 100%">
         <mat-label>{{ key }}</mat-label>
