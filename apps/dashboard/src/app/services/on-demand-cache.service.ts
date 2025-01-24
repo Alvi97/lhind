@@ -6,6 +6,12 @@ import { TRIPS } from '../utils/trip-data';
 import { UserService } from '@lhind/data-access-user';
 import { CarRental } from '../models/car-rental.model';
 import { carRental } from '../utils/car-rental-data';
+import { Flight } from '../models/flight.model';
+import { Hotel } from '../models/hotel.model';
+import { Taxi } from '../models/taxi.model';
+import { taxiData } from '../utils/taxi-data';
+import { flights } from '../utils/flight-data';
+import { hotels } from '../utils/hotel-data';
 
 @Injectable({
   providedIn: 'root'
@@ -21,11 +27,23 @@ export class OnDemandCacheService<T>{
     this.currentTripsSubject.next(TRIPS);
   }
 
-  private currentTripsSubject = new BehaviorSubject<Trip[] | []>([]);
+  public currentTripsSubject = new BehaviorSubject<Trip[] | []>([]);
   currentTrips$: Observable<Trip[] | []> = this.currentTripsSubject.asObservable();
 
-  private currentCarRentalSubject = new BehaviorSubject<CarRental[] | []>([]);
+  public currentCarRentalSubject = new BehaviorSubject<CarRental[] | []>([]);
   currentCarRental$: Observable<CarRental[] | []> = this.currentCarRentalSubject.asObservable();
+
+  public currenFlightsSubject = new BehaviorSubject<Flight[] | []>([]);
+  currentFlights$: Observable<Flight[] | []> = this.currenFlightsSubject.asObservable();
+
+  public currentHotelsSubject = new BehaviorSubject<Hotel[] | []>([]);
+  currentHotels$: Observable<Hotel[] | []> = this.currentHotelsSubject.asObservable();
+
+  public currentTaxisSubject = new BehaviorSubject<Taxi[] | []>([]);
+  currentTaxis$: Observable<Taxi[] | []> = this.currentTaxisSubject.asObservable();
+
+  public  selectedTripSubject = new BehaviorSubject<Trip | null>(null);
+  selectedTrip$: Observable<Trip | null> = this.selectedTripSubject.asObservable();
 
 
   currentOnDemandDataSubject = new BehaviorSubject<any[]>([]);
@@ -34,7 +52,6 @@ export class OnDemandCacheService<T>{
   selectedOnDemandTypeSubject$: Observable<string> = this.selectedOnDemandTypeSubject.asObservable();
   currentOnDemandElementSubject = new BehaviorSubject<any>(null);
   currentOnDemandElementSubject$: Observable<any> = this.currentOnDemandElementSubject.asObservable();
-
 
 
 
@@ -51,15 +68,37 @@ export class OnDemandCacheService<T>{
     return this.currentCarRentalSubject.value;
   }
 
+  public set carRentalsData(carRentalData:CarRental[]){
+    const newData = carRentalData ?? [];
+    this.currentCarRentalSubject.next([...this.carRentals, ...newData]);
+  }
+
+  public get getHotels():Hotel[]{
+    return this.currentHotelsSubject.value;
+  }
+
+  public get getFlights():Flight[]{
+    return this.currenFlightsSubject.value;
+  }
+
+  public get getTaxis():Taxi[]{
+    return this.currentTaxisSubject.value;
+  }
 
   public get selectedonDemandType() :string{
     return this.selectedOnDemandTypeSubject.value;
+  }
+
+  public get selectedTrip():Trip | null{
+    return this.selectedTripSubject.value;
   }
 
 
   private setInitialData() {
     this.currentOnDemandDataSubject.next(TRIPS);
     this.currentCarRentalSubject.next(carRental);
-
+    this.currentTaxisSubject.next(taxiData);
+    this.currenFlightsSubject.next(flights)
+    this.currentHotelsSubject.next(hotels)
   }
 }

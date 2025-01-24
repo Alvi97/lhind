@@ -7,9 +7,13 @@ import { Permission } from '../../models/user.model';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { OnDemandCacheService } from '../../services/on-demand-cache.service';
 import { DynamicAccordionDisplayComponent } from './dynamic-accordion-display/dynamic-accordion-display.component';
-import { TripData } from '../../models/trip.model';
+import { Trip, TripData } from '../../models/trip.model';
 import { deepEqual } from '../../utils/deepCompare';
 import { CarRentalData } from '../../models/car-rental.model';
+import { HotelData } from '../../models/hotel.model';
+import { UserService } from '@lhind/data-access-user';
+import { FlightData } from '../../models/flight.model';
+import { TaxiData } from '../../models/taxi.model';
 
 @Component({
   selector: 'lhind-dynamic-list-container',
@@ -21,20 +25,35 @@ import { CarRentalData } from '../../models/car-rental.model';
 export class DynamicListContainerComponent<T> {
 
   public OnDemandCacheService = inject(OnDemandCacheService);
-
+  public userService = inject(UserService);
   connstructor(){
 
   }
 
-  public getKeys(obj: any): string[] {
-    return Object.keys(obj).filter((key) => key !== 'id' && key !== 'name');
+
+  public selectElement(element: object) {
+    if (this.OnDemandCacheService.selectedonDemandType === 'Trips') {
+      const currentTrip = this.OnDemandCacheService.selectedTripSubject.getValue();
+      const isTripSelectedAgain = currentTrip && deepEqual(element, currentTrip);
+
+      if (isTripSelectedAgain) {
+        this.OnDemandCacheService.selectedTripSubject.next(null);
+      } else {
+        this.OnDemandCacheService.selectedTripSubject.next(element as Trip);
+      }
+    }
+    const isSelectedAgain = deepEqual(
+      element,
+      this.OnDemandCacheService.currentOnDemandElementSubject.value
+    );
+
+    if (isSelectedAgain) {
+      this.OnDemandCacheService.currentOnDemandElementSubject.next(null);
+    } else {
+      this.OnDemandCacheService.currentOnDemandElementSubject.next(element);
+    }
   }
 
-  public selectElement(element:object){
-    const isSelectedAgain = deepEqual(element,this.OnDemandCacheService.currentOnDemandElementSubject.value);
-    if(isSelectedAgain) {this.OnDemandCacheService.currentOnDemandElementSubject.next(null);}else
-    this.OnDemandCacheService.currentOnDemandElementSubject.next(element);
-  }
 
   public addElement(){
     const type = this.OnDemandCacheService.selectedonDemandType;
@@ -48,7 +67,26 @@ export class DynamicListContainerComponent<T> {
       case 'Car Rentals':
         const newCarRental = new CarRentalData();
         newCarRental.id= this.OnDemandCacheService.carRentals.length + 1;
+        newCarRental.userId = this.userService.currentUser?.id ?? 0;
         this.OnDemandCacheService.currentOnDemandElementSubject.next(newCarRental);
+        break;
+      case 'Hotels':
+        const hotel = new HotelData();
+        hotel.id= this.OnDemandCacheService.getHotels.length + 1;
+        hotel.userId = this.userService.currentUser?.id ?? 0;
+        this.OnDemandCacheService.currentOnDemandElementSubject.next(hotel);
+        break;
+      case 'Flight':
+        const flight = new FlightData();
+        flight.id= this.OnDemandCacheService.getFlights.length + 1;
+        flight.userId = this.userService.currentUser?.id ?? 0;
+        this.OnDemandCacheService.currentOnDemandElementSubject.next(flight);
+        break;
+      case 'Taxi':
+        const taxi = new TaxiData();
+        taxi.id= this.OnDemandCacheService.getTaxis.length + 1;
+        taxi.userId = this.userService.currentUser?.id ?? 0;
+        this.OnDemandCacheService.currentOnDemandElementSubject.next(taxi);
         break;
     }
   }

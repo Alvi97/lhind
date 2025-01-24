@@ -19,6 +19,7 @@ export class TripData {
 
   public constructor() {
     this.id = 0;
+    this.userId = 1;
     this.name = '';
     this.duration = ''
     this.setForApproval=false;

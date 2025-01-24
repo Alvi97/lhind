@@ -18,7 +18,9 @@
 
 
     <mat-sidenav-content>
+      @if(onDemandCacheService.selectedTripSubject | async){
     <lhind-expense-cards-container />
+      }
     </mat-sidenav-content>
   </mat-sidenav-container>
 </div>

@@ -5,8 +5,10 @@ import { OnDemandCacheService } from '../../services/on-demand-cache.service';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
-import { debounceTime, distinctUntilChanged, filter } from 'rxjs';
+import { BehaviorSubject, debounceTime, distinctUntilChanged, filter } from 'rxjs';
 import { PermissionDirective } from '../../directives/permission.directive';
+import { UserService } from '@lhind/data-access-user';
+import { Trip } from '../../models/trip.model';
 
 @Component({
   selector: 'lhind-dynamic-form-container',
@@ -22,12 +24,12 @@ import { PermissionDirective } from '../../directives/permission.directive';
   templateUrl: './dynamic-form-container.component.html',
   styleUrls: ['./dynamic-form-container.component.css'],
 })
-export class DynamicFormContainerComponent<T extends { id: number } & Record<string, any>> {
+export class DynamicFormContainerComponent<T extends { userId: number } & { id: number } & { tripId: number } & Record<string, any>> {
   formGroup!: FormGroup;
   public selectedObject!: T;
 
   public onDemandCacheService = inject(OnDemandCacheService);
-
+  private userService = inject(UserService);
   constructor(private fb: FormBuilder) {
     this.formGroup = this.fb.group({});
     this.onDemandCacheService.currentOnDemandElementSubject$
@@ -53,7 +55,7 @@ export class DynamicFormContainerComponent<T extends { id: number } & Record<str
     const group: { [key: string]: any } = {};
 
     Object.keys(this.selectedObject)
-      .filter((key) => key !== 'id' && key !== 'userId'  && key !== 'setForApproval' )
+      .filter((key) => key !== 'id' && key !== 'userId'  && key !== 'setForApproval' && key !=='tripId' )
       .forEach((key) => {
         group[key] = this.fb.control(this.selectedObject[key] || '', Validators.required);
       });
@@ -91,25 +93,96 @@ export class DynamicFormContainerComponent<T extends { id: number } & Record<str
       return 'text'; // Default to text for strings and other types
     }
   }
-
   updateOnDemandElement(updatedElement: T): void {
-    if(!this.formGroup.valid) return;
-    const currentData = this.onDemandCacheService.currentOnDemandDataSubject.getValue();
+    if (!this.formGroup.valid) return;
 
-    const index = currentData.findIndex((element) => element.id === updatedElement.id);
-
-    if (index !== -1) {
-     currentData[index] = { ...currentData[index], ...updatedElement };
-
-      // Push the updated array back to the BehaviorSubject
-      this.onDemandCacheService.currentOnDemandDataSubject.next([...currentData]);
-    } else {
-      this.onDemandCacheService.currentOnDemandDataSubject.next([...currentData,updatedElement]);
-      console.error('Element not found in currentOnDemandDataSubject');
+    const currentType = this.onDemandCacheService.selectedOnDemandTypeSubject.getValue();
+    const currentTrip = this.onDemandCacheService.selectedTripSubject.getValue();
+    if (!currentType ) {
+      console.error('No type selected for the current data.');
+      return;
     }
+
+    if (currentType === 'Trips') {
+      const currentTrips: Trip[] = this.onDemandCacheService.currentTripsSubject.getValue();
+
+      if (!Array.isArray(currentTrips)) {
+        console.error('Current trips data is not an array.');
+        return;
+      }
+
+      if (this.isTrip(updatedElement)) {
+        updatedElement.userId = this.userService.currentUser?.id ?? 0;
+
+        const tripIndex = currentTrips.findIndex((trip) => trip.id === updatedElement.id);
+
+        if (tripIndex !== -1) {
+          currentTrips[tripIndex] = { ...currentTrips[tripIndex], ...updatedElement };
+        } else {
+          currentTrips.push(updatedElement);
+        }
+
+        this.onDemandCacheService.currentTripsSubject.next([...currentTrips]);
+        this.onDemandCacheService.currentOnDemandDataSubject.next(currentTrips)
+        console.log('Trips updated:', currentTrips);
+      } else {
+        console.error('Updated element is not a Trip.');
+      }
+
+      return; // Exit here to avoid further logic
+    }
+
+
+
+    const typeSubjectMap: { [key: string]: BehaviorSubject<any[]> } = {
+      'Car Rentals': this.onDemandCacheService.currentCarRentalSubject,
+      Flight: this.onDemandCacheService.currenFlightsSubject,
+      Hotels: this.onDemandCacheService.currentHotelsSubject,
+      Taxi: this.onDemandCacheService.currentTaxisSubject,
+    };
+
+    const selectedSubject = typeSubjectMap[currentType];
+
+    if (!selectedSubject) {
+      console.error(`No subject found for type: ${currentType}`);
+      return;
+    }
+
+    const currentData = selectedSubject.getValue();
+
+    if (!Array.isArray(currentData)) {
+      console.error('Current data is not an array.');
+      return;
+    }
+
+    const index = currentData.findIndex((element: any) => element.id === updatedElement.id);
+
+    updatedElement['userId'] = this.userService.currentUser?.id ?? 0;
+    updatedElement['tripId'] = currentTrip?.id as number;
+    if (index !== -1) {
+      currentData[index] = { ...currentData[index], ...updatedElement };
+    } else {
+      currentData.push(updatedElement);
+    }
+
+    selectedSubject.next([...currentData]);
+    this.onDemandCacheService.selectedOnDemandTypeSubject.next(currentType);
+    console.log(`${currentType} updated:`, currentData);
   }
+
+
 
   sendForApproval(){
     this.formGroup.controls['setForApproval'].setValue(true);
+  }
+
+  isTrip(element: any): element is Trip {
+    return (
+      element &&
+      typeof element.id === 'number' &&
+      typeof element.name === 'string' &&
+      element.startDate instanceof Date &&
+      element.endDate instanceof Date
+    );
   }
 }
