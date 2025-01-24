@@ -9,6 +9,7 @@ import { BehaviorSubject, debounceTime, distinctUntilChanged, filter } from 'rxj
 import { PermissionDirective } from '../../directives/permission.directive';
 import { UserService } from '@lhind/data-access-user';
 import { Trip } from '../../models/trip.model';
+import { FinanceStatus, TripStatus } from '../../utils/trip-data';
 
 @Component({
   selector: 'lhind-dynamic-form-container',
@@ -24,7 +25,7 @@ import { Trip } from '../../models/trip.model';
   templateUrl: './dynamic-form-container.component.html',
   styleUrls: ['./dynamic-form-container.component.css'],
 })
-export class DynamicFormContainerComponent<T extends { userId: number } & { id: number } & { tripId: number; setForApproval?: boolean } & Record<string, any>> {
+export class DynamicFormContainerComponent<T extends { userId: number } & { id: number } & { status: TripStatus } & { financeStatus: FinanceStatus }  & { tripId: number; setForApproval?: boolean } & Record<string, any>> {
   formGroup!: FormGroup;
   public selectedObject!: T;
   isDisabled = false;
@@ -45,14 +46,13 @@ export class DynamicFormContainerComponent<T extends { userId: number } & { id: 
         console.log(currentElement, 'in the form');
         this.selectedObject = currentElement as T;
         const parentTrip =this.onDemandCacheService.currentTrips.find((x=>x.id === this.selectedObject.tripId));
-        this.isDisabled = (parentTrip?.setForApproval || this.selectedObject.setForApproval) ?? false;
+        this.isDisabled = (parentTrip?.setForApproval || this.selectedObject.setForApproval || this.userService.currentUser?.role ==='Approver') ?? false;
         this.buildForm();
       });
   }
 
   buildForm(): void {
     if (!this.selectedObject) {
-      console.error('No object provided for dynamic form!');
       this.formGroup = this.fb.group({});
       return;
     }
@@ -60,7 +60,12 @@ export class DynamicFormContainerComponent<T extends { userId: number } & { id: 
     const group: { [key: string]: any } = {};
 
     Object.keys(this.selectedObject)
-      .filter((key) => key !== 'id' && key !== 'userId' && key !== 'setForApproval' && key !== 'tripId')
+      .filter((key) => key !== 'id' && key !== 'userId'
+        && key !== 'setForApproval'
+        && key !== 'tripId'
+        && key !== 'note'
+        && key !== 'status'
+      )
       .forEach((key) => {
         group[key] = this.fb.control(
           { value: this.selectedObject[key] || '', disabled: this.isDisabled },
@@ -68,21 +73,52 @@ export class DynamicFormContainerComponent<T extends { userId: number } & { id: 
         );
       });
 
+    if (this.userService.currentUser?.role === 'Approver') {
+      group['note'] = this.fb.control(
+        { value: this.selectedObject['note'] || '', disabled: false }
+      );
+    }
+
     this.formGroup = this.fb.group(group);
 
-    // Subscribe to form changes if not disabled
-    if (!this.isDisabled) {
+    // if (!this.isDisabled) {
       this.formGroup.valueChanges
         .pipe(distinctUntilChanged(), debounceTime(50))
         .subscribe((updatedValues) => {
           const updatedObject = { ...this.selectedObject, ...updatedValues };
           this.updateOnDemandElement(updatedObject);
         });
-    }
+    // }
   }
+
+  public approveOrCancel(action:string){
+    switch (action){
+      case 'approve':
+        this.selectedObject.status = TripStatus.Approved
+        break
+      case 'cancel':
+        this.selectedObject.status = TripStatus.Cancel
+        break
+    }
+    this.updateOnDemandElement(this.selectedObject);
+  }
+
+  public manageFinance(action:string){
+    switch (action){
+      case 'inprocess':
+        this.selectedObject.financeStatus = FinanceStatus.InProcess
+        break
+      case 'refund':
+        this.selectedObject.financeStatus = FinanceStatus.Refunded
+        break
+    }
+    this.updateOnDemandElement(this.selectedObject);
+  }
+
 
   sendForApproval() {
     this.selectedObject.setForApproval = true;
+    this.selectedObject = this.formGroup.value;
     this.updateOnDemandElement(this.selectedObject);
     this.disableAllWithTripId(this.selectedObject.id);
 
@@ -119,22 +155,6 @@ export class DynamicFormContainerComponent<T extends { userId: number } & { id: 
 
   }
 
-
-
-  updateOnDemandElement(updatedElement: T): void {
-    // Existing logic to update the on-demand element
-  }
-
-  isTrip(element: any): element is Trip {
-    return (
-      element &&
-      typeof element.id === 'number' &&
-      typeof element.name === 'string' &&
-      element.startDate instanceof Date &&
-      element.endDate instanceof Date
-    );
-  }
-
   public getKeys(): string[] {
     return Object.keys(this.formGroup.controls);
   }
@@ -147,9 +167,92 @@ export class DynamicFormContainerComponent<T extends { userId: number } & { id: 
     } else if (typeof value === 'boolean') {
       return 'checkbox';
     } else {
-      return 'text'; // Default to text for strings and other types
+      return 'text';
     }
   }
+
+  updateOnDemandElement(updatedElement: T): void {
+    if (!this.formGroup.valid) return;
+
+    const currentType = this.onDemandCacheService.selectedOnDemandTypeSubject.getValue();
+    const currentTrip = this.onDemandCacheService.selectedTripSubject.getValue();
+    if (!currentType ) {
+      console.error('No type selected for the current data.');
+      return;
+    }
+
+    if (currentType === 'Trips') {
+      const currentTrips: Trip[] = this.onDemandCacheService.currentTripsSubject.getValue();
+
+      if (!Array.isArray(currentTrips)) {
+        console.error('Current trips data is not an array.');
+        return;
+      }
+
+      if (this.isTrip(updatedElement)) {
+        updatedElement.userId = this.userService.currentUser?.id ?? 0;
+
+        const tripIndex = currentTrips.findIndex((trip) => trip.id === updatedElement.id);
+
+        if (tripIndex !== -1) {
+          currentTrips[tripIndex] = { ...currentTrips[tripIndex], ...updatedElement };
+        } else {
+          currentTrips.push(updatedElement);
+        }
+
+        this.onDemandCacheService.currentTripsSubject.next([...currentTrips]);
+        this.onDemandCacheService.currentOnDemandDataSubject.next(currentTrips)
+        console.log('Trips updated:', currentTrips);
+      } else {
+        console.error('Updated element is not a Trip.');
+      }
+
+      return;
+    }
+
+
+
+    const typeSubjectMap: { [key: string]: BehaviorSubject<any[]> } = {
+      'Car Rentals': this.onDemandCacheService.currentCarRentalSubject,
+      Flight: this.onDemandCacheService.currenFlightsSubject,
+      Hotels: this.onDemandCacheService.currentHotelsSubject,
+      Taxi: this.onDemandCacheService.currentTaxisSubject,
+    };
+
+    const selectedSubject = typeSubjectMap[currentType];
+
+    if (!selectedSubject) {
+      console.error(`No subject found for type: ${currentType}`);
+      return;
+    }
+
+    const currentData = selectedSubject.getValue();
+
+    if (!Array.isArray(currentData)) {
+      console.error('Current data is not an array.');
+      return;
+    }
+
+    const index = currentData.findIndex((element: any) => element.id === updatedElement.id);
+
+    updatedElement['userId'] = this.userService.currentUser?.id ?? 0;
+    updatedElement['tripId'] = currentTrip?.id as number;
+    if (index !== -1) {
+      currentData[index] = { ...currentData[index], ...updatedElement };
+    } else {
+      currentData.push(updatedElement);
+    }
+
+    selectedSubject.next([...currentData]);
+    this.onDemandCacheService.selectedOnDemandTypeSubject.next(currentType);
+    console.log(`${currentType} updated:`, currentData);
+  }
+
+
+
+
+  //just a dummy check
+  isTrip(element: any): element is Trip {
+    return element.name.includes('rip');
+  }
 }
-
-

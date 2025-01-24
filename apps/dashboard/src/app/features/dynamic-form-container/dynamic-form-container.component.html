@@ -16,4 +16,26 @@
     <button mat-raised-button (click)="sendForApproval()">Send For Approval </button>
   </ng-template>
   }
+    <ng-template [lhindPermission]="'CanApproveTrip'">
+      <div style="display: flex;
+    justify-content: space-around;">
+        <button mat-raised-button (click)="approveOrCancel('cancel')">Cancel </button>
+        <button mat-flat-button (click)="approveOrCancel('approve')">Approve </button>
+
+      </div>
+    </ng-template>
+
+    <div style="display: flex;
+    justify-content: space-around;">
+      <button mat-raised-button (click)="manageFinance('inprocess')">In process </button>
+      <button mat-flat-button (click)="manageFinance('refund')">Refund </button>
+
+    </div>
+    <ng-template [lhindPermission]="'CanManageFinance'">
+
+    </ng-template>
+
+
+
+
 }

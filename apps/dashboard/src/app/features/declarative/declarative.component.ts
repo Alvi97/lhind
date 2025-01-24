@@ -15,4 +15,9 @@ import { OnDemandCacheService } from '../../services/on-demand-cache.service';
 })
 export class DeclarativeComponent {
   public onDemandCacheService = inject(OnDemandCacheService);
+
+
+  ngOnDestroy(){
+  this.onDemandCacheService.updateStorage()
+  }
 }

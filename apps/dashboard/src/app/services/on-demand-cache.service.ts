@@ -1,7 +1,7 @@
 import { inject, Injectable } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { Trip } from '../models/trip.model';
-import { TRIPS } from '../utils/trip-data';
+import { TRIPS, TripStatus } from '../utils/trip-data';
 import { UserService } from '@lhind/data-access-user';
 import { CarRental } from '../models/car-rental.model';
 import { carRental } from '../utils/car-rental-data';
@@ -11,13 +11,12 @@ import { Taxi } from '../models/taxi.model';
 import { taxiData } from '../utils/taxi-data';
 import { flights as flightData} from '../utils/flight-data';
 import { hotels as hotelData} from '../utils/hotel-data';
-import { AuthService } from '../../../../../libs/shared/data-access-user/src/lib/auth/auth.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class OnDemandCacheService<T> {
-  private authService = inject(AuthService);
+  private userService = inject(UserService);
 
   constructor() {
     this.initializeFromStorage();
@@ -54,11 +53,17 @@ export class OnDemandCacheService<T> {
 
   // Reset to trips
   public resetToTrips() {
-    this.currentOnDemandDataSubject.next(this.currentTrips);
+
+    const isFinance = this.userService.currentUser?.role === 'Finance';
+
+    const trips = isFinance
+      ? this.currentTrips.filter((trip) => trip.status === TripStatus.Approved)
+      : this.currentTrips;
+
+    this.currentOnDemandDataSubject.next(trips);
     this.selectedOnDemandTypeSubject.next('Trips');
   }
 
-  // Getters
   public get currentTrips(): Trip[] {
     return this.currentTripsSubject.value;
   }
@@ -116,4 +121,15 @@ export class OnDemandCacheService<T> {
     this.saveToStorage('taxis', this.getTaxis);
   }
 
+  private saveToStorage(key: string, data: any): void {
+    localStorage.setItem(key, JSON.stringify(data));
+  }
+
+  private getFromStorage<T>(key: string): T | null {
+    const data = localStorage.getItem(key);
+    return data ? JSON.parse(data) : null;
+  }
+  ngOnDestroy(){
+    console.log('destroy cache service');
+  }
 }

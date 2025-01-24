@@ -10,12 +10,29 @@
     </button>
   </div>
 </ng-template>
-
 <mat-accordion >
   <ng-container *ngFor="let sectionElement of (OnDemandCacheService.currentOnDemandDataSubject$ | async) as onDemandData;index as i">
   <mat-expansion-panel hideToggle style="margin:0;border-radius:0px" (click)="selectElement(sectionElement)">
-    <mat-expansion-panel-header>
-      <mat-panel-title> {{sectionElement.name ? sectionElement.name : sectionElement.from + ' - ' + sectionElement.to }} </mat-panel-title>
+    <mat-expansion-panel-header >
+      <mat-panel-title style="justify-content:space-between"><span>{{sectionElement.name ? sectionElement.name : sectionElement.from + ' - ' + sectionElement.to }}</span>
+        @if(userService.currentUser?.role === 'Approver'){
+          @if(sectionElement.status === TripStatus.Approved){
+            <span style="width:10px;height:10px;border-radius:50%" [ngStyle]="{'background-color': sectionElement['setForApproval'] ? 'blue' : ''}"></span>
+          } @else if (sectionElement.status === TripStatus.Cancel){
+            <span style="width:10px;height:10px;border-radius:50%" [ngStyle]="{'background-color': sectionElement['setForApproval'] ? 'red' : ''}"></span>
+          }@else{
+            <span style="width:10px;height:10px;border-radius:50%" [ngStyle]="{'background-color': sectionElement['setForApproval'] ? 'green' : ''}"></span>
+          }
+        }
+        @else if(userService.currentUser?.role === 'Finance'){
+          @if(sectionElement['financeStatus'] === FinanceStatus.InProcess){
+            <span style="width:10px;height:10px;border-radius:50%;background-color: orange"></span>
+          } @else if (sectionElement['financeStatus'] === FinanceStatus.Refunded){
+            <span style="width:10px;height:10px;border-radius:50%" [ngStyle]="{'background-color': sectionElement['financeStatus'] ? 'green' : ''}"></span>
+          }
+        }
+
+      </mat-panel-title>
     </mat-expansion-panel-header>
 <!--    <lhind-dynamic-accordion-display-->
 <!--      [object]="section"-->

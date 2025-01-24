@@ -4,6 +4,7 @@ import { Router } from '@angular/router';
 import { UserLogin } from '../../../../../../apps/login/src/app/models/user.model';
 import { User } from '../../../../../../apps/dashboard/src/app/models/user.model';
 import { USERS } from '../../../../../../apps/dashboard/src/app/utils/user-data';
+import { AuthService } from '../auth/auth.service';
 
 @Injectable({ providedIn: 'root' })
 export class UserService {
@@ -11,6 +12,7 @@ export class UserService {
   private currentUserSubject = new BehaviorSubject<User | null>(null);
   currentUser$: Observable<User | null> = this.currentUserSubject.asObservable();
 
+  private authService = inject(AuthService);
   private router = inject(Router);
 
   public get currentUser():User | null{
@@ -37,7 +39,6 @@ export class UserService {
 
 
   public logout(): void {
-    debugger
     this.currentUserSubject.next(null);
     localStorage.removeItem('currentUser');
     this.router.navigate(['login']);

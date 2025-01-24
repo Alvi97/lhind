@@ -14,6 +14,7 @@ import { HotelData } from '../../models/hotel.model';
 import { UserService } from '@lhind/data-access-user';
 import { FlightData } from '../../models/flight.model';
 import { TaxiData } from '../../models/taxi.model';
+import { FinanceStatus, TripStatus } from '../../utils/trip-data';
 
 @Component({
   selector: 'lhind-dynamic-list-container',
@@ -91,6 +92,8 @@ export class DynamicListContainerComponent<T> {
     }
   }
 
+  protected readonly TripStatus = TripStatus;
+  protected readonly FinanceStatus = FinanceStatus;
 }
 
 
