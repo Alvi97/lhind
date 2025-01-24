@@ -16,7 +16,7 @@
     "baseUrl": ".",
     "paths": {
       "@lhind/data-access-user": ["libs/shared/data-access-user/src/index.ts"],
-      "@lhind/mylib": ["mylib/src/index.ts"],
+      "@lhind/footer": ["libs/shared/footer/src/index.ts"],
       "@lhind/toolbar": ["libs/shared/toolbar/src/index.ts"],
       "login/Routes": ["apps/login/src/app/login-form/login-form.component.ts"]
     }

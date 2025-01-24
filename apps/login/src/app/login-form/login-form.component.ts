@@ -13,6 +13,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
+import { UserLogin } from '../models/user.model';
 
 @Component({
   standalone: true,
@@ -99,9 +100,8 @@ export class LoginFormComponent {
     password: new FormControl('', Validators.required),
   });
 
-  isLoggedIn$ = this.userService.isUserLoggedIn$;
 
   public login() {
-    this.userService.checkCredentials(this.formGroup.value);
+    this.userService.login(this.formGroup.value as UserLogin);
   }
 }
