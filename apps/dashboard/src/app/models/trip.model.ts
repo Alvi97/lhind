@@ -1,3 +1,5 @@
+import { FinanceStatus, TripStatus } from '../utils/trip-data';
+
 export interface Trip{
   id: number;
   userId:number;
@@ -6,6 +8,9 @@ export interface Trip{
   setForApproval:false;
   startDate: Date;
   endDate: Date;
+  note:string;
+  status:TripStatus,
+  financeStatus:FinanceStatus
 }
 
 export class TripData {
@@ -16,6 +21,9 @@ export class TripData {
   public setForApproval:boolean;
   public startDate: Date;
   public endDate: Date;
+  public note:string
+  public status:string;
+  public financeStatus:string
 
   public constructor() {
     this.id = 0;
@@ -25,5 +33,8 @@ export class TripData {
     this.setForApproval=false;
     this.startDate = new Date();
     this.endDate = new Date();
+    this.note = ''
+    this.status=''
+    this.financeStatus=''
   }
 }
