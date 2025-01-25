@@ -15,7 +15,7 @@
   <ng-template [lhindPermission]="'SendForApproval'">
     <button mat-raised-button (click)="sendForApproval()">Send For Approval </button>
   </ng-template>
-  }
+}
     <ng-template [lhindPermission]="'CanApproveTrip'">
       <div style="display: flex;
     justify-content: space-around;">
@@ -25,14 +25,14 @@
       </div>
     </ng-template>
 
-    <div style="display: flex;
-    justify-content: space-around;">
-      <button mat-raised-button (click)="manageFinance('inprocess')">In process </button>
-      <button mat-flat-button (click)="manageFinance('refund')">Refund </button>
 
-    </div>
     <ng-template [lhindPermission]="'CanManageFinance'">
+      <div style="display: flex;
+    justify-content: space-around;">
+        <button mat-raised-button (click)="manageFinance('inprocess')">In process </button>
+        <button mat-flat-button (click)="manageFinance('refund')">Refund </button>
 
+      </div>
     </ng-template>
 
 

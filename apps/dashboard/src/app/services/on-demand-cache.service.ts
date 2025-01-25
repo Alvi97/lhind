@@ -125,7 +125,7 @@ export class OnDemandCacheService<T> {
     localStorage.setItem(key, JSON.stringify(data));
   }
 
-  private getFromStorage<T>(key: string): T | null {
+  public getFromStorage<T>(key: string): T | null {
     const data = localStorage.getItem(key);
     return data ? JSON.parse(data) : null;
   }

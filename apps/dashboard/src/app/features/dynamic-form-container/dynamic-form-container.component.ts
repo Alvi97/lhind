@@ -65,6 +65,7 @@ export class DynamicFormContainerComponent<T extends { userId: number } & { id: 
         && key !== 'tripId'
         && key !== 'note'
         && key !== 'status'
+        && key !== 'financeStatus'
       )
       .forEach((key) => {
         group[key] = this.fb.control(
@@ -81,7 +82,6 @@ export class DynamicFormContainerComponent<T extends { userId: number } & { id: 
 
     this.formGroup = this.fb.group(group);
 
-    // if (!this.isDisabled) {
       this.formGroup.valueChanges
         .pipe(distinctUntilChanged(), debounceTime(50))
         .subscribe((updatedValues) => {
@@ -125,16 +125,13 @@ export class DynamicFormContainerComponent<T extends { userId: number } & { id: 
     this.isDisabled = true;
     this.buildForm();
 
-    // Trigger change detection
     this.cdr.detectChanges();
   }
 
   disableAllWithTripId(tripId: number): void {
     debugger
-    // Update related elements in currentOnDemandDataSubject
     const currentData = this.onDemandCacheService.currentOnDemandDataSubject.getValue();
     const updatedData = currentData.map((element) => {
-      // Disable only elements with the matching tripId
       if (element.tripId === tripId) {
         return { ...element, setForApproval: true };
       }
@@ -142,10 +139,8 @@ export class DynamicFormContainerComponent<T extends { userId: number } & { id: 
     });
     this.onDemandCacheService.currentOnDemandDataSubject.next(updatedData);
 
-    // Update only the selected trip in currentTripsSubject
     const currentTrips = this.onDemandCacheService.currentTripsSubject.getValue();
     const updatedTrips = currentTrips.map((trip) => {
-      // Disable only the trip with the matching id
       if (trip.id === tripId) {
         return { ...trip, setForApproval: true };
       }

@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { PermissionDirective } from '../../directives/permission.directive';
 import { MatIconModule } from '@angular/material/icon';
@@ -16,6 +16,8 @@ import { FlightData } from '../../models/flight.model';
 import { TaxiData } from '../../models/taxi.model';
 import { FinanceStatus, TripStatus } from '../../utils/trip-data';
 
+export const broadcastChannel = new BroadcastChannel('demo-broadcast-channel');
+
 @Component({
   selector: 'lhind-dynamic-list-container',
   imports: [CommonModule, PermissionDirective, MatIconModule, MatButtonModule, MatMiniFabButton, MatExpansionModule, DynamicAccordionDisplayComponent],
@@ -23,16 +25,25 @@ import { FinanceStatus, TripStatus } from '../../utils/trip-data';
   templateUrl: './dynamic-list-container.component.html',
   styleUrl: './dynamic-list-container.component.css',
 })
-export class DynamicListContainerComponent<T> {
+export class DynamicListContainerComponent<T> implements OnInit{
 
   public OnDemandCacheService = inject(OnDemandCacheService);
   public userService = inject(UserService);
-  connstructor(){
+  private bc = new BroadcastChannel('test_channel');
+  ngOnInit(){
+    broadcastChannel.onmessage = (ev) => {
+      if(ev.data === 'selectElement') {
+        const element = this.OnDemandCacheService.getFromStorage('selectedElement');
+        this.OnDemandCacheService.currentOnDemandElementSubject.next(element);
+        this.OnDemandCacheService.selectedTripSubject.next(element as Trip) ;
+      }
+    }
 
   }
 
-
   public selectElement(element: object) {
+    localStorage.setItem('selectedElement', JSON.stringify(element));
+    broadcastChannel.postMessage('selectElement')
     if (this.OnDemandCacheService.selectedonDemandType === 'Trips') {
       const currentTrip = this.OnDemandCacheService.selectedTripSubject.getValue();
       const isTripSelectedAgain = currentTrip && deepEqual(element, currentTrip);
