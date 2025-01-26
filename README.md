@@ -26,6 +26,11 @@ npm run build
 #### Route-based code splitting
 #### Shared component libraries
 
+## Usability
+
+The page manages the functionality by states, you can change the selected list between trips and expenses category by cliclikg on the card to select an expense and clicking again to deavtivate the card and go back to trips.
+The form updating happens on form change, there is no need for a save button the elements is automatically updated when something changes within the form.
+
 ## Lhind used dynamic module federation
 
 Lhind consists on two remote applications specifically `login` and `dashboard` which serves as the host application
